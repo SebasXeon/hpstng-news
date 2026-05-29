@@ -5,7 +5,7 @@ const headlineInput = document.getElementById('headline');
 const downloadBtn = document.getElementById('downloadBtn');
 
 let backgroundImage = null;
-const colors = { rojo: '#e94560', azul: '#4da6ff' };
+const colors = { rojo: '#b83248', azul: '#4da6ff', verde: '#3ddc84', amarillo: '#f0c420', naranja: '#f08c28', rosa: '#f06090', morado: '#a855f7', blanco: '#ffffff' };
 
 imageUpload.addEventListener('change', (e) => {
   const file = e.target.files[0];
@@ -182,7 +182,7 @@ function drawHeadline() {
 
 function parseColorTags(text) {
   const result = [];
-  const regex = /\[(rojo|azul)\](.*?)\[\/\1\]/g;
+  const regex = /\[(rojo|azul|verde|amarillo|naranja|rosa|morado|blanco)\](.*?)\[\/\1\]/g;
   let lastIndex = 0;
   let match;
 
