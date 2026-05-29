@@ -5,7 +5,7 @@ const headlineInput = document.getElementById('headline');
 const downloadBtn = document.getElementById('downloadBtn');
 
 let backgroundImage = null;
-const colors = { rojo: '#b83248', azul: '#4da6ff', verde: '#3ddc84', amarillo: '#f0c420', naranja: '#f08c28', rosa: '#f06090', morado: '#a855f7', blanco: '#ffffff' };
+const colors = { rojo: '#e94560', azul: '#4da6ff', verde: '#3ddc84', amarillo: '#f0c420', naranja: '#f08c28', rosa: '#f06090', morado: '#a855f7', blanco: '#ffffff' };
 
 imageUpload.addEventListener('change', (e) => {
   const file = e.target.files[0];
@@ -172,9 +172,13 @@ function drawHeadline() {
     ctx.font = `bold ${seg.fontSize}px sans-serif`;
     for (let i = 0; i < seg.words.length; i++) {
       const word = seg.words[i];
-      ctx.fillStyle = word.color || '#fff';
       const prefix = i > 0 ? ' ' : '';
-      ctx.fillText(prefix + word.text, x, startY + seg.y);
+      const textX = x;
+      const textY = startY + seg.y;
+      ctx.fillStyle = 'rgba(0,0,0,0.4)';
+      ctx.fillText(prefix + word.text, textX + 2, textY + 2);
+      ctx.fillStyle = word.color || '#fff';
+      ctx.fillText(prefix + word.text, textX, textY);
       x += ctx.measureText(prefix + word.text).width;
     }
   }
