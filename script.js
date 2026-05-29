@@ -170,17 +170,18 @@ function drawHeadline() {
   for (const seg of segments) {
     let x = 40;
     ctx.font = `bold ${seg.fontSize}px sans-serif`;
+    ctx.shadowColor = 'rgba(0,0,0,0.6)';
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
     for (let i = 0; i < seg.words.length; i++) {
       const word = seg.words[i];
-      const prefix = i > 0 ? ' ' : '';
-      const textX = x;
-      const textY = startY + seg.y;
-      ctx.fillStyle = 'rgba(0,0,0,0.4)';
-      ctx.fillText(prefix + word.text, textX + 2, textY + 2);
       ctx.fillStyle = word.color || '#fff';
-      ctx.fillText(prefix + word.text, textX, textY);
+      const prefix = i > 0 ? ' ' : '';
+      ctx.fillText(prefix + word.text, x, startY + seg.y);
       x += ctx.measureText(prefix + word.text).width;
     }
+    ctx.shadowBlur = 0;
   }
 }
 
