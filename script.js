@@ -5,6 +5,12 @@ const headlineInput = document.getElementById('headline');
 const downloadBtn = document.getElementById('downloadBtn');
 
 let backgroundImage = null;
+let fbIcon = new Image();
+let igIcon = new Image();
+fbIcon.onload = drawCanvas;
+igIcon.onload = drawCanvas;
+fbIcon.src = 'images/facebook.svg';
+igIcon.src = 'images/insta.svg';
 const colors = { rojo: '#e94560', azul: '#4da6ff', verde: '#3ddc84', amarillo: '#f0c420', naranja: '#f08c28', rosa: '#f06090', morado: '#a855f7', blanco: '#ffffff' };
 
 imageUpload.addEventListener('change', (e) => {
@@ -22,9 +28,17 @@ imageUpload.addEventListener('change', (e) => {
 headlineInput.addEventListener('input', drawCanvas);
 
 downloadBtn.addEventListener('click', () => {
+  const scale = 1200 / Math.max(canvas.width, canvas.height);
+  const tempCanvas = document.createElement('canvas');
+  tempCanvas.width = canvas.width * scale;
+  tempCanvas.height = canvas.height * scale;
+  const tempCtx = tempCanvas.getContext('2d');
+  tempCtx.imageSmoothingEnabled = true;
+  tempCtx.imageSmoothingQuality = 'high';
+  tempCtx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
   const link = document.createElement('a');
   link.download = 'news-image.png';
-  link.href = canvas.toDataURL('image/png');
+  link.href = tempCanvas.toDataURL('image/png');
   link.click();
 });
 
@@ -73,6 +87,7 @@ function drawHeadline() {
   const text = headlineInput.value || '';
   ctx.textAlign = 'left';
 
+  const barHeight = 36;
   const maxWidth = canvas.width - 80;
   const paragraphs = text.split('\n');
   const segments = [];
@@ -131,7 +146,7 @@ function drawHeadline() {
   }
 
   const totalHeight = currentY;
-  let startY = canvas.height - 70 - (totalHeight - (segments.length > 0 ? segments[0].fontSize * 1.1 : 0));
+  let startY = canvas.height - barHeight - 40 - (totalHeight - (segments.length > 0 ? segments[0].fontSize * 1.1 : 0));
 
   const badgeText = 'ULTIMA HORA';
   ctx.font = 'bold 16px sans-serif';
@@ -141,7 +156,7 @@ function drawHeadline() {
   const firstLineHeight = segments.length > 0 ? segments[0].fontSize * 1.1 : 46;
   const badgeY = startY - firstLineHeight - badgeHeight - 5;
 
-  const gradientStart = badgeY - 20;
+  const gradientStart = Math.max(0, badgeY - 120);
   const gradient = ctx.createLinearGradient(0, gradientStart, 0, canvas.height);
   gradient.addColorStop(0, 'rgba(0,0,0,0)');
   gradient.addColorStop(0.3, 'rgba(0,0,0,0.6)');
@@ -154,19 +169,11 @@ function drawHeadline() {
   ctx.fillStyle = '#fff';
   ctx.font = 'bold 16px sans-serif';
   ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
   ctx.fillText(badgeText, badgeX + 10, badgeY + 20);
 
-  ctx.fillStyle = '#e94560';
-  ctx.font = 'bold 16px sans-serif';
-  ctx.textAlign = 'right';
-  const handleText = '@hijueposting';
-  const handleWidth = ctx.measureText(handleText).width + 16;
-  const handleX = canvas.width - 40 - handleWidth;
-  ctx.fillRect(handleX, 15, handleWidth, 28);
-  ctx.fillStyle = '#fff';
-  ctx.fillText(handleText, canvas.width - 48, 35);
-
   ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
   for (const seg of segments) {
     let x = 40;
     ctx.font = `bold ${seg.fontSize}px sans-serif`;
@@ -183,6 +190,40 @@ function drawHeadline() {
     }
     ctx.shadowBlur = 0;
   }
+
+  const barY = canvas.height - barHeight;
+
+  ctx.fillStyle = '#e94560';
+  ctx.fillRect(0, barY, canvas.width, barHeight);
+
+  const iconSize = 22;
+  const iconGap = 8;
+  const iconY = barY + (barHeight - iconSize) / 2;
+
+  const handleText = 'hijueposting';
+  ctx.font = 'bold 16px sans-serif';
+  const textWidth = ctx.measureText(handleText).width;
+  const groupWidth = iconSize + iconGap + iconSize + iconGap + textWidth;
+  const groupX = (canvas.width - groupWidth) / 2;
+
+  let cx = groupX;
+
+  if (fbIcon.complete && fbIcon.naturalWidth > 0) {
+    ctx.drawImage(fbIcon, cx, iconY, iconSize, iconSize);
+  }
+  cx += iconSize + iconGap;
+
+  if (igIcon.complete && igIcon.naturalWidth > 0) {
+    ctx.drawImage(igIcon, cx, iconY, iconSize, iconSize);
+  }
+  cx += iconSize + iconGap;
+
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(handleText, cx, barY + barHeight / 2 + 1);
+
+  ctx.textBaseline = 'alphabetic';
 }
 
 function parseColorTags(text) {
